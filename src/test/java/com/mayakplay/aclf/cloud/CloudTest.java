@@ -4,6 +4,8 @@ package com.mayakplay.aclf.cloud;
 import org.junit.After;
 import org.junit.Test;
 
+import static org.junit.Assert.fail;
+
 /**
  * @author mayakplay
  * @version 0.0.1
@@ -14,14 +16,13 @@ public class CloudTest {
     @After
     public void gatewayClientTest() {
 
-        System.out.println("gct");
 
     }
 
     @Test
     public void gatewayServerTest() {
 
-        System.out.println("gst");
+        fail("hrenota");
 
     }
 

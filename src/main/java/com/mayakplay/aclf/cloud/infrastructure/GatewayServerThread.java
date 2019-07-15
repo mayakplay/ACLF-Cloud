@@ -34,6 +34,8 @@ public final class GatewayServerThread extends Thread implements GatewayServer {
                 final BufferedReader reader = new BufferedReader(inputStreamReader);
                 final String caughtContext = reader.lines().collect(Collectors.joining());
 
+                System.out.println(caughtContext);
+
 //                processingThread.toProcessingQueue(socket.getInetAddress(), caughtContext);
             }
         }
