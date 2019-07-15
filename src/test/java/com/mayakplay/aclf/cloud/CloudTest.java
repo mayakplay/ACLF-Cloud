@@ -1,10 +1,10 @@
 package com.mayakplay.aclf.cloud;
 
 
+import com.mayakplay.aclf.cloud.stereotype.GatewayServer;
+import com.mayakplay.aclf.cloud.util.builder.CloudBuilder;
 import org.junit.After;
 import org.junit.Test;
-
-import static org.junit.Assert.fail;
 
 /**
  * @author mayakplay
@@ -17,12 +17,19 @@ public class CloudTest {
     public void gatewayClientTest() {
 
 
+
     }
 
     @Test
     public void gatewayServerTest() {
 
-        fail("hrenota");
+        final GatewayServer gatewayServer = CloudBuilder.newGatewayBuilder()
+                .setNuggetPort(1250)
+                .build();
+
+        gatewayServer.addReceiveListener(System.out::println);
+
+        gatewayServer.start();
 
     }
 
