@@ -1,0 +1,14 @@
+# windows
+*.bat
+
+# gradle
+/.gradle
+/build
+!gradlew.bat
+
+# intellij
+/out
+/.idea
+/*.iml
+/*.ipr
+/*.iws
