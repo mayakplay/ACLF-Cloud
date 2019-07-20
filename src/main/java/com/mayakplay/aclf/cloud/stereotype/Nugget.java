@@ -1,25 +1,36 @@
 package com.mayakplay.aclf.cloud.stereotype;
 
-import com.mayakplay.aclf.cloud.exception.UninitializedNuggetException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * @author mayakplay
  * @version 0.0.1
- * @since 15.07.2019.
+ * @since 20.07.2019.
  */
 public interface Nugget {
 
+    /**
+     * Received message
+     */
     @NotNull
-    default long getConnectionId() {
-        throw new UninitializedNuggetException();
+    String getMessage();
+
+    /**
+     * An immutable map of parameters
+     */
+    @NotNull
+    Map<String, String> getParameters();
+
+    @Nullable
+    default String getParameter(String key) {
+        return getParameters().get(key);
     }
 
-    @NotNull
-    default Type getNuggetType() {
-        throw new UninitializedNuggetException();
+    default boolean hasParameter(String key) {
+        return getParameters().containsKey(key);
     }
 
 }
