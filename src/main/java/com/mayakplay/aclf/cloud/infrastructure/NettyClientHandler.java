@@ -13,7 +13,7 @@ import io.netty.util.CharsetUtil;
  */
 public final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
-    ChannelHandlerContext context;
+    private ChannelHandlerContext context;
 
     public void sendMessage(String message) {
         if (context != null) {
