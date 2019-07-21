@@ -10,7 +10,6 @@ import com.mayakplay.aclf.cloud.stereotype.Nugget;
 import com.mayakplay.aclf.cloud.util.JsonUtils;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.SocketAddress;
@@ -50,12 +49,10 @@ final class GatewayClientsContainer {
     private final Map<String, GatewayClientInfo> clientsAssociationsMap = new HashMap<>();
 
     //region Getters
-    @Nullable
     ChannelHandlerContext getContextByClientId(String clientId) {
         return contextAssociationMap.get(clientId);
     }
 
-    @NotNull
     Collection<ChannelHandlerContext> getContainedContexts() {
         return ImmutableList.copyOf(contextAssociationMap.values());
     }

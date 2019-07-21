@@ -94,6 +94,7 @@ final class NettyServerThread extends Thread {
     Map<String, GatewayClientInfo> getClientsByType(String type) {
         return clientsContainer.getClientsByType(type);
     }
+    
     @Nullable
     GatewayClientInfo getClientById(String clientId) {
         return clientsContainer.getClientInfoById(clientId);
