@@ -1,5 +1,7 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
+import com.mayakplay.aclf.cloud.stereotype.ClientNuggetReceiveCallback;
+import com.mayakplay.aclf.cloud.stereotype.GatewayClientInfo;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -12,24 +14,38 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
-import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * @author mayakplay
  * @version 0.0.1
  * @since 20.07.2019.
  */
-@AllArgsConstructor
 public final class NettyServerThread extends Thread {
 
-    private int port;
-    private final NettyServerHandler nettyServerHandler = new NettyServerHandler();
+    private final ClientNuggetReceiveCallback receiveCallback;
+
+    private final int port;
+    private final NettyServerHandler nettyServerHandler;
+
+    public NettyServerThread(int port, ClientNuggetReceiveCallback receiveCallback) {
+        this.receiveCallback = receiveCallback;
+        final HashSet<String> ips = new HashSet<>();
+        ips.add("127.0.0.1");
+        this.port = port;
+        this.nettyServerHandler = new NettyServerHandler(new GatewayClientsContainer(ips, receiveCallback));
+    }
 
     @Override
     public void run() {
-        final ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() { // (4)
+        final ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel socketChannel) {
+                System.out.println("Connected: " + "[" + socketChannel.remoteAddress() + "]");
                 socketChannel.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
                 socketChannel.pipeline().addLast("decoder", new StringDecoder());
                 socketChannel.pipeline().addLast("encoder", new StringEncoder());
@@ -58,6 +74,22 @@ public final class NettyServerThread extends Thread {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    public void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message, @NotNull Map<String, String> params) {
+        nettyServerHandler.sendToClient(clientInfo, new NuggetWrapper(message, params));
+    }
+
+    public void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message) {
+        sendToClient(clientInfo, message, new HashMap<>());
+    }
+
+    public void sendToAll(@NotNull String message, @NotNull Map<String, String> params) {
+        nettyServerHandler.sendToAll(new NuggetWrapper(message, params));
+    }
+
+    public void sendToAll(@NotNull String message) {
+        sendToAll(message, new HashMap<>());
     }
 
 }

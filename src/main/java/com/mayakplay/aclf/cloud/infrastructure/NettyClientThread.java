@@ -1,5 +1,6 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
+import com.mayakplay.aclf.cloud.stereotype.NuggetReceiveCallback;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -9,19 +10,26 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
-import lombok.AllArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author mayakplay
  * @version 0.0.1
  * @since 20.07.2019.
  */
-@AllArgsConstructor
 public final class NettyClientThread extends Thread {
 
     private final String host;
     private final int port;
-    private final NettyClientHandler nettyClientHandler = new NettyClientHandler();
+    private final NettyClientHandler nettyClientHandler;
+
+    public NettyClientThread(String host, int port, NuggetReceiveCallback receiveCallback) {
+        this.nettyClientHandler = new NettyClientHandler(receiveCallback);
+        this.host = host;
+        this.port = port;
+    }
 
     @Override
     public void run() {
@@ -58,8 +66,12 @@ public final class NettyClientThread extends Thread {
         }
     }
 
+    public void sendToServer(String message, Map<String, String> parameters) {
+        nettyClientHandler.sendNugget(new NuggetWrapper(message, parameters));
+    }
+
     public void sendToServer(String message) {
-        nettyClientHandler.sendMessage(message);
+        sendToServer(message, new HashMap<>());
     }
 
 }

@@ -6,4 +6,7 @@ package com.mayakplay.aclf.cloud.stereotype;
  * @since 20.07.2019.
  */
 public interface GatewayInfo {
+
+    String getAssignedId();
+
 }

@@ -1,8 +1,12 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
+import com.mayakplay.aclf.cloud.stereotype.GatewayClientInfo;
+import com.mayakplay.aclf.cloud.stereotype.Nugget;
+import com.mayakplay.aclf.cloud.util.JsonUtils;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author mayakplay
@@ -12,23 +16,41 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 @ChannelHandler.Sharable
 public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println(ctx.channel().remoteAddress() + ": " + msg.toString());
+    private GatewayClientsContainer gatewayContainer;
 
-//        final ChannelFuture future = ctx.writeAndFlush(msg + "\n");
+    public NettyServerHandler(GatewayClientsContainer gatewayContainer) {
+        this.gatewayContainer = gatewayContainer;
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        final NuggetWrapper nuggetWrapper = JsonUtils.toObject((String) msg, NuggetWrapper.class);
+
+        if (nuggetWrapper != null) {
+            Nugget response = gatewayContainer.onRead(ctx, ctx.channel().remoteAddress(), nuggetWrapper);
+
+            if (response != null) {
+                ctx.writeAndFlush(JsonUtils.toJson(response) + "\n");
+            }
+        }
+
+        super.channelRead(ctx, msg);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
+        final boolean allowedClient = gatewayContainer.onConnect(ctx.channel().remoteAddress());
 
-        ctx.close();
+        if (!allowedClient) {
+            ctx.close();
+        }
+
+        super.channelActive(ctx);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-
+        super.channelReadComplete(ctx);
     }
 
     @Override
@@ -39,8 +61,24 @@ public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        gatewayContainer.onDisconnect(ctx.channel().remoteAddress());
         super.channelInactive(ctx);
-        System.out.println(ctx.channel().remoteAddress());
-        System.out.println("channel inactive");
     }
+
+    public void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull Nugget nugget) {
+        final ChannelHandlerContext contextByClientId = gatewayContainer.getContextByClientId(clientInfo.getClientId());
+
+        if (contextByClientId != null) {
+            final String jsonNugget = JsonUtils.toJson(nugget);
+
+            contextByClientId.writeAndFlush(JsonUtils.toJson(jsonNugget) + "\n");
+        }
+    }
+
+    public void sendToAll(@NotNull Nugget nugget) {
+        for (ChannelHandlerContext context : gatewayContainer.getContainedContexts()) {
+            context.writeAndFlush(JsonUtils.toJson(nugget) + "\n");
+        }
+    }
+
 }
