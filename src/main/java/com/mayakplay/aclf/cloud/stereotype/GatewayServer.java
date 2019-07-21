@@ -33,16 +33,32 @@ public interface GatewayServer {
     @Nullable
     GatewayClientInfo getClientById(String clientId);
 
+    /**
+     * Sends nugget if client exists and registered
+     */
     void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message, @NotNull Map<String, String> params);
 
+    /**
+     * Sends nugget to all registered clients.
+     */
+    void sendToAll(@NotNull String message, @NotNull Map<String, String> params);
+
+    /**
+     * Shortcut for {@link #sendToClient(GatewayClientInfo, String, Map)}
+     */
     default void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message) {
         sendToClient(clientInfo, message, new HashMap<>());
     }
 
-    void sendToAll(@NotNull String message, @NotNull Map<String, String> params);
-
+    /**
+     * Shortcut for {@link #sendToAll(String, Map)}
+     */
     default void sendToAll(@NotNull String message) {
         sendToAll(message, new HashMap<>());
     }
 
+
+    void addReceiveCallback(ClientNuggetReceiveCallback callback);
+
+    void addRegistrationHandler(ClientRegistrationHandler handler);
 }

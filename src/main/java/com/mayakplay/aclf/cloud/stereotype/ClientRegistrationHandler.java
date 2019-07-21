@@ -6,4 +6,9 @@ package com.mayakplay.aclf.cloud.stereotype;
  * @since 21.07.2019.
  */
 public interface ClientRegistrationHandler {
+
+    void onRegister(GatewayClientInfo clientInfo);
+
+    void onUnregister(GatewayClientInfo clientInfo);
+
 }

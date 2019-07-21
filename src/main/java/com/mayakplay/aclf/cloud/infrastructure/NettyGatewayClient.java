@@ -19,17 +19,20 @@ public final class NettyGatewayClient implements GatewayClient {
     private final List<NuggetReceiveCallback> receiveCallbacks = new ArrayList<>();
 
     public NettyGatewayClient(String host, int port) {
-        this.nettyClientThread = new NettyClientThread(host, port, this::initCallbacks);
+        this.nettyClientThread = new NettyClientThread(host, port, this::initReceiveCallbacks);
+        this.nettyClientThread.start();
     }
 
+    private void initReceiveCallbacks(Nugget nugget) {
+        receiveCallbacks.forEach(callback -> callback.nuggetReceived(nugget));
+    }
+
+    @Override
     public void addReceiveCallback(NuggetReceiveCallback callback) {
         receiveCallbacks.add(callback);
     }
 
-    private void initCallbacks(Nugget nugget) {
-        receiveCallbacks.forEach(callback -> callback.nuggetReceived(nugget));
-    }
-
+    @Override
     public boolean isRegistered() {
         return nettyClientThread.isRegistered();
     }

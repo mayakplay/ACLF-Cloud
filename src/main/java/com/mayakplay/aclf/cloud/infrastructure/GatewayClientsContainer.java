@@ -5,11 +5,12 @@ import com.google.common.collect.ImmutableMap;
 import com.mayakplay.aclf.cloud.nugget.RegisterMessage;
 import com.mayakplay.aclf.cloud.nugget.RegisterResponseMessage;
 import com.mayakplay.aclf.cloud.stereotype.ClientNuggetReceiveCallback;
+import com.mayakplay.aclf.cloud.stereotype.ClientRegistrationHandler;
 import com.mayakplay.aclf.cloud.stereotype.GatewayClientInfo;
 import com.mayakplay.aclf.cloud.stereotype.Nugget;
 import com.mayakplay.aclf.cloud.util.JsonUtils;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.SocketAddress;
@@ -24,11 +25,12 @@ import java.util.stream.Collectors;
  * @version 0.0.1
  * @since 20.07.2019.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 final class GatewayClientsContainer {
 
     private final Set<String> allowedIps;
     private final ClientNuggetReceiveCallback receiveCallback;
+    private final ClientRegistrationHandler registrationHandler;
 
     /**
      * &lt;SocketAddress.toString(), Client info&gt;
@@ -47,6 +49,11 @@ final class GatewayClientsContainer {
      * &lt;Client id, Client info&gt;
      */
     private final Map<String, GatewayClientInfo> clientsAssociationsMap = new HashMap<>();
+
+    /**
+     * Id generation util field
+     */
+    private int serverCounter = 0;
 
     //region Getters
     ChannelHandlerContext getContextByClientId(String clientId) {
@@ -84,6 +91,7 @@ final class GatewayClientsContainer {
         if (remove != null) {
             contextAssociationMap.remove(remove.getClientId());
             clientsAssociationsMap.remove(remove.getClientId());
+            registrationHandler.onUnregister(remove);
         }
     }
 
@@ -93,7 +101,7 @@ final class GatewayClientsContainer {
         final GatewayClientInfo gatewayClientInfo = clientInfoMap.get(socketAddress.toString());
 
         if (gatewayClientInfo != null) {
-            receiveCallback.messageReceived(gatewayClientInfo, nugget);
+            receiveCallback.nuggetReceived(gatewayClientInfo, nugget);
             return null;
         }
         //endregion
@@ -102,12 +110,13 @@ final class GatewayClientsContainer {
         final RegisterMessage registerMessage = JsonUtils.toObject(nugget.getMessage(), RegisterMessage.class);
 
         if (registerMessage != null) {
-            final String generatedClientId = "id";
+            final String generatedClientId = generateNewId(registerMessage.getClientType());
 
             final RegisteredClientInfo newClientInfo = new RegisteredClientInfo(generatedClientId, registerMessage.getClientType());
             clientInfoMap.put(socketAddress.toString(), newClientInfo);
             contextAssociationMap.put(newClientInfo.getClientId(), ctx);
             clientsAssociationsMap.put(newClientInfo.getClientId(), newClientInfo);
+            registrationHandler.onRegister(newClientInfo);
             System.out.println("Client registered: " + newClientInfo);
 
             final RegisterResponseMessage responseMessage = new RegisterResponseMessage(generatedClientId);
@@ -119,6 +128,10 @@ final class GatewayClientsContainer {
         return null;
     }
     //endregion
+
+    private String generateNewId(String clientType) {
+        return clientType + "_" + ++serverCounter;
+    }
 
     //region Util
     private static String parseIp(SocketAddress socketAddress) {

@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 /**
+ * Conditional ACLF-Cloud message unit.
+ * Contains params and message.
+ *
  * @author mayakplay
  * @version 0.0.1
  * @since 20.07.2019.
@@ -24,11 +27,18 @@ public interface Nugget {
     @NotNull
     Map<String, String> getParameters();
 
+    /**
+     * @return parameter value if exists,
+     *          null if don't
+     */
     @Nullable
     default String getParameter(String key) {
         return getParameters().get(key);
     }
 
+    /**
+     * @return parameter existence by key
+     */
     default boolean hasParameter(String key) {
         return getParameters().containsKey(key);
     }

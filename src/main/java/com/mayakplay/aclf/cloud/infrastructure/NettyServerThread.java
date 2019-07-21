@@ -1,6 +1,7 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
 import com.mayakplay.aclf.cloud.stereotype.ClientNuggetReceiveCallback;
+import com.mayakplay.aclf.cloud.stereotype.ClientRegistrationHandler;
 import com.mayakplay.aclf.cloud.stereotype.GatewayClientInfo;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -31,12 +32,12 @@ final class NettyServerThread extends Thread {
     private final NettyServerHandler nettyServerHandler;
     private final GatewayClientsContainer clientsContainer;
 
-    NettyServerThread(int port, Set<String> allowedIps, ClientNuggetReceiveCallback receiveCallback) {
+    NettyServerThread(int port, Set<String> allowedIps, ClientNuggetReceiveCallback receiveCallback, ClientRegistrationHandler registrationHandler) {
         allowedIps.add("127.0.0.1");
 
         this.port = port;
 
-        this.clientsContainer = new GatewayClientsContainer(allowedIps, receiveCallback);
+        this.clientsContainer = new GatewayClientsContainer(allowedIps, receiveCallback, registrationHandler);
 
         this.nettyServerHandler = new NettyServerHandler(clientsContainer);
     }
