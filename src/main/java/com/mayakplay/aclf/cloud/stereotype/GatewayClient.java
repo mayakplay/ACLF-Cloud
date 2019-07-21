@@ -11,7 +11,7 @@ public interface GatewayClient {
 
     void sendNugget(String nuggetMessage, Map<String, String> parameters);
 
-    void addReceiveCallback(NuggetReceiveCallback callback);
+    GatewayClient addReceiveCallback(NuggetReceiveCallback callback);
 
     boolean isRegistered();
 

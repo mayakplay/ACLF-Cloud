@@ -28,8 +28,9 @@ public final class NettyGatewayClient implements GatewayClient {
     }
 
     @Override
-    public void addReceiveCallback(NuggetReceiveCallback callback) {
+    public GatewayClient addReceiveCallback(NuggetReceiveCallback callback) {
         receiveCallbacks.add(callback);
+        return this;
     }
 
     @Override
