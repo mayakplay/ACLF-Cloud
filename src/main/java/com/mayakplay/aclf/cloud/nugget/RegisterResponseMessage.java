@@ -12,6 +12,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class RegisterResponseMessage {
 
-    final String clientId;
+    private final String clientId;
 
 }

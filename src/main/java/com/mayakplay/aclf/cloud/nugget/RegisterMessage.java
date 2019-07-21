@@ -12,6 +12,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public final class RegisterMessage {
 
-    final String clientType;
+    private final String clientType;
 
 }
