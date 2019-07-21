@@ -18,13 +18,13 @@ import java.util.Map;
  * @version 0.0.1
  * @since 20.07.2019.
  */
-public final class NettyClientThread extends Thread {
+final class NettyClientThread extends Thread {
 
     private final String host;
     private final int port;
     private final NettyClientHandler nettyClientHandler;
 
-    public NettyClientThread(String host, int port, NuggetReceiveCallback receiveCallback) {
+    NettyClientThread(String host, int port, NuggetReceiveCallback receiveCallback) {
         this.nettyClientHandler = new NettyClientHandler(receiveCallback);
         this.host = host;
         this.port = port;

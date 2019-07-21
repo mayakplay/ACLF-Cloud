@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @since 20.07.2019.
  */
 @RequiredArgsConstructor
-public final class NettyClientHandler extends ChannelInboundHandlerAdapter {
+final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private final NuggetReceiveCallback callback;
 
@@ -31,7 +31,7 @@ public final class NettyClientHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    public boolean isRegistered() {
+    boolean isRegistered() {
         return gatewayInfo != null;
     }
 
@@ -68,10 +68,6 @@ public final class NettyClientHandler extends ChannelInboundHandlerAdapter {
             }
         }
 
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext context) {
     }
 
     @Override

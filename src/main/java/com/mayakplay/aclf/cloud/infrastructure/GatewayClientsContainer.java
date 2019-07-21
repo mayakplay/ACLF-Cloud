@@ -88,7 +88,7 @@ final class GatewayClientsContainer {
     }
 
     @Nullable
-    public Nugget onRead(ChannelHandlerContext ctx, SocketAddress socketAddress, Nugget nugget) {
+    Nugget onRead(ChannelHandlerContext ctx, SocketAddress socketAddress, Nugget nugget) {
         //region If client is registered
         final GatewayClientInfo gatewayClientInfo = clientInfoMap.get(socketAddress.toString());
 
