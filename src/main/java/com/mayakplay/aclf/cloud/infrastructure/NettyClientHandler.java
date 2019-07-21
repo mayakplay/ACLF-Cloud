@@ -21,6 +21,7 @@ import java.util.HashMap;
 final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private final NuggetReceiveCallback callback;
+    private final String clientType;
 
     private ChannelHandlerContext context;
     private GatewayInfo gatewayInfo;
@@ -39,7 +40,7 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext context) {
         this.context = context;
 
-        final NuggetWrapper test = new NuggetWrapper(JsonUtils.toJson(new RegisterMessage("test")), new HashMap<>());
+        final NuggetWrapper test = new NuggetWrapper(JsonUtils.toJson(new RegisterMessage(clientType)), new HashMap<>());
 
         final String json = JsonUtils.toJson(test);
 

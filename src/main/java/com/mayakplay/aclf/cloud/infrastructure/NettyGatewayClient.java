@@ -18,8 +18,8 @@ public final class NettyGatewayClient implements GatewayClient {
     private final NettyClientThread nettyClientThread;
     private final List<NuggetReceiveCallback> receiveCallbacks = new ArrayList<>();
 
-    public NettyGatewayClient(String host, int port) {
-        this.nettyClientThread = new NettyClientThread(host, port, this::initReceiveCallbacks);
+    public NettyGatewayClient(String host, int port, String clientType) {
+        this.nettyClientThread = new NettyClientThread(host, port, clientType, this::initReceiveCallbacks);
         this.nettyClientThread.start();
     }
 

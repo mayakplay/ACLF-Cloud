@@ -113,9 +113,13 @@ final class GatewayClientsContainer {
             final String generatedClientId = generateNewId(registerMessage.getClientType());
 
             final RegisteredClientInfo newClientInfo = new RegisteredClientInfo(generatedClientId, registerMessage.getClientType());
+
+            //region put associations values
             clientInfoMap.put(socketAddress.toString(), newClientInfo);
             contextAssociationMap.put(newClientInfo.getClientId(), ctx);
             clientsAssociationsMap.put(newClientInfo.getClientId(), newClientInfo);
+            //endregion
+
             registrationHandler.onRegister(newClientInfo);
             System.out.println("Client registered: " + newClientInfo);
 
@@ -129,8 +133,8 @@ final class GatewayClientsContainer {
     }
     //endregion
 
-    private String generateNewId(String clientType) {
-        return clientType + "_" + ++serverCounter;
+    private synchronized String generateNewId(String clientType) {
+        return clientType + "_" + serverCounter++;
     }
 
     //region Util
