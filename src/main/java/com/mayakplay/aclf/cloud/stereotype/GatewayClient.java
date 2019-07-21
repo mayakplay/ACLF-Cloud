@@ -1,6 +1,6 @@
 package com.mayakplay.aclf.cloud.stereotype;
 
-import com.mayakplay.aclf.cloud.util.Pair;
+import java.util.Map;
 
 /**
  * @author mayakplay
@@ -9,6 +9,6 @@ import com.mayakplay.aclf.cloud.util.Pair;
  */
 public interface GatewayClient {
 
-    void sendNugget(String nuggetMessage, Pair<String, String>... parameters);
+    void sendNugget(String nuggetMessage, Map<String, String> parameters);
 
 }

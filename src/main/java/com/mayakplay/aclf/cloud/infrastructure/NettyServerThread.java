@@ -15,29 +15,30 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author mayakplay
  * @version 0.0.1
  * @since 20.07.2019.
  */
-public final class NettyServerThread extends Thread {
-
-    private final ClientNuggetReceiveCallback receiveCallback;
+final class NettyServerThread extends Thread {
 
     private final int port;
     private final NettyServerHandler nettyServerHandler;
+    private final GatewayClientsContainer clientsContainer;
 
-    public NettyServerThread(int port, ClientNuggetReceiveCallback receiveCallback) {
-        this.receiveCallback = receiveCallback;
-        final HashSet<String> ips = new HashSet<>();
-        ips.add("127.0.0.1");
+    NettyServerThread(int port, Set<String> allowedIps, ClientNuggetReceiveCallback receiveCallback) {
+        allowedIps.add("127.0.0.1");
+
         this.port = port;
-        this.nettyServerHandler = new NettyServerHandler(new GatewayClientsContainer(ips, receiveCallback));
+
+        this.clientsContainer = new GatewayClientsContainer(allowedIps, receiveCallback);
+
+        this.nettyServerHandler = new NettyServerHandler(clientsContainer);
     }
 
     @Override
@@ -76,20 +77,25 @@ public final class NettyServerThread extends Thread {
         }
     }
 
-    public void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message, @NotNull Map<String, String> params) {
+    void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message, @NotNull Map<String, String> params) {
         nettyServerHandler.sendToClient(clientInfo, new NuggetWrapper(message, params));
     }
 
-    public void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message) {
-        sendToClient(clientInfo, message, new HashMap<>());
-    }
-
-    public void sendToAll(@NotNull String message, @NotNull Map<String, String> params) {
+    void sendToAll(@NotNull String message, @NotNull Map<String, String> params) {
         nettyServerHandler.sendToAll(new NuggetWrapper(message, params));
     }
 
-    public void sendToAll(@NotNull String message) {
-        sendToAll(message, new HashMap<>());
+    @NotNull
+    Map<String, GatewayClientInfo> getClients() {
+        return clientsContainer.getClients();
     }
 
+    @NotNull
+    Map<String, GatewayClientInfo> getClientsByType(String type) {
+        return clientsContainer.getClientsByType(type);
+    }
+    @Nullable
+    GatewayClientInfo getClientById(String clientId) {
+        return clientsContainer.getClientInfoById(clientId);
+    }
 }

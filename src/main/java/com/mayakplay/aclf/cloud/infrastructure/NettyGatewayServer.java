@@ -17,26 +17,35 @@ import java.util.Set;
 public class NettyGatewayServer implements GatewayServer {
 
     private final NettyServerThread nettyServerThread;
-    private final Set<String> allowedIps;
 
     public NettyGatewayServer(int port, Set<String> allowedIps, ClientNuggetReceiveCallback receiveCallback) {
-        this.allowedIps = allowedIps;
-        nettyServerThread = new NettyServerThread(port, receiveCallback);
+        nettyServerThread = new NettyServerThread(port, allowedIps, receiveCallback);
         nettyServerThread.start();
     }
 
     @Override
     public @NotNull Map<String, GatewayClientInfo> getClients() {
-        return null;
+        return nettyServerThread.getClients();
     }
 
     @Override
-    public @NotNull Map<String, GatewayClientInfo> getGatewayClientsByType(String type) {
-        return null;
+    public @NotNull Map<String, GatewayClientInfo> getClientsByType(String type) {
+        return nettyServerThread.getClientsByType(type);
     }
 
     @Override
     public @Nullable GatewayClientInfo getClientById(String clientId) {
-        return null;
+        return nettyServerThread.getClientById(clientId);
     }
+
+    @Override
+    public void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message, @NotNull Map<String, String> params) {
+        nettyServerThread.sendToClient(clientInfo, message, params);
+    }
+
+    @Override
+    public void sendToAll(@NotNull String message, @NotNull Map<String, String> params) {
+        nettyServerThread.sendToAll(message, params);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.mayakplay.aclf.cloud.nugget.RegisterMessage;
 import com.mayakplay.aclf.cloud.nugget.RegisterResponseMessage;
 import com.mayakplay.aclf.cloud.stereotype.ClientNuggetReceiveCallback;
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author mayakplay
@@ -37,20 +39,44 @@ final class GatewayClientsContainer {
     /**
      * Used to get context when a message is sent to a specific client.
      * Updated immediately after {@link #clientInfoMap}
-     *
+     * <p>
      * &lt;Client id, Netty context&gt;
      */
     private final Map<String, ChannelHandlerContext> contextAssociationMap = new HashMap<>();
 
+    /**
+     * &lt;Client id, Client info&gt;
+     */
+    private final Map<String, GatewayClientInfo> clientsAssociationsMap = new HashMap<>();
+
+    //region Getters
     @Nullable
-    public ChannelHandlerContext getContextByClientId(String clientId) {
+    ChannelHandlerContext getContextByClientId(String clientId) {
         return contextAssociationMap.get(clientId);
     }
 
     @NotNull
-    public Collection<ChannelHandlerContext> getContainedContexts() {
+    Collection<ChannelHandlerContext> getContainedContexts() {
         return ImmutableList.copyOf(contextAssociationMap.values());
     }
+
+    @Nullable
+    GatewayClientInfo getClientInfoById(String clientId) {
+        return clientsAssociationsMap.get(clientId);
+    }
+
+    @NotNull
+    Map<String, GatewayClientInfo> getClients() {
+        return ImmutableMap.copyOf(clientsAssociationsMap);
+    }
+
+    @NotNull
+    Map<String, GatewayClientInfo> getClientsByType(String type) {
+        return ImmutableMap.copyOf(clientsAssociationsMap.entrySet().stream()
+                .filter(entry -> entry.getValue().getClientType().equals(type))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b)));
+    }
+    //endregion
 
     //region Events
     boolean onConnect(SocketAddress socketAddress) {
@@ -58,8 +84,12 @@ final class GatewayClientsContainer {
     }
 
     void onDisconnect(SocketAddress socketAddress) {
-        clientInfoMap.remove(socketAddress.toString());
-        contextAssociationMap.remove(socketAddress.toString());
+        final GatewayClientInfo remove = clientInfoMap.remove(socketAddress.toString());
+
+        if (remove != null) {
+            contextAssociationMap.remove(remove.getClientId());
+            clientsAssociationsMap.remove(remove.getClientId());
+        }
     }
 
     @Nullable
@@ -82,6 +112,7 @@ final class GatewayClientsContainer {
             final RegisteredClientInfo newClientInfo = new RegisteredClientInfo(generatedClientId, registerMessage.getClientType());
             clientInfoMap.put(socketAddress.toString(), newClientInfo);
             contextAssociationMap.put(newClientInfo.getClientId(), ctx);
+            clientsAssociationsMap.put(newClientInfo.getClientId(), newClientInfo);
             System.out.println("Client registered: " + newClientInfo);
 
             final RegisterResponseMessage responseMessage = new RegisterResponseMessage(generatedClientId);

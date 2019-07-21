@@ -11,7 +11,6 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -66,12 +65,12 @@ public final class NettyClientThread extends Thread {
         }
     }
 
-    public void sendToServer(String message, Map<String, String> parameters) {
+    void sendToServer(String message, Map<String, String> parameters) {
         nettyClientHandler.sendNugget(new NuggetWrapper(message, parameters));
     }
 
-    public void sendToServer(String message) {
-        sendToServer(message, new HashMap<>());
+    boolean isRegistered() {
+        return nettyClientHandler.isRegistered();
     }
 
 }

@@ -25,10 +25,14 @@ public final class NettyClientHandler extends ChannelInboundHandlerAdapter {
     private ChannelHandlerContext context;
     private GatewayInfo gatewayInfo;
 
-    public void sendNugget(Nugget nugget) {
+    void sendNugget(Nugget nugget) {
         if (context != null && gatewayInfo != null) {
             context.writeAndFlush(JsonUtils.toJson(nugget) + "\n");
         }
+    }
+
+    public boolean isRegistered() {
+        return gatewayInfo != null;
     }
 
     @Override

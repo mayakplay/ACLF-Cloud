@@ -3,6 +3,7 @@ package com.mayakplay.aclf.cloud.stereotype;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,12 +25,24 @@ public interface GatewayServer {
      * @return connected servers by type
      */
     @NotNull
-    Map<String, GatewayClientInfo> getGatewayClientsByType(String type);
+    Map<String, GatewayClientInfo> getClientsByType(String type);
 
     /**
      * @return server by id
      */
     @Nullable
     GatewayClientInfo getClientById(String clientId);
+
+    void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message, @NotNull Map<String, String> params);
+
+    default void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message) {
+        sendToClient(clientInfo, message, new HashMap<>());
+    }
+
+    void sendToAll(@NotNull String message, @NotNull Map<String, String> params);
+
+    default void sendToAll(@NotNull String message) {
+        sendToAll(message, new HashMap<>());
+    }
 
 }

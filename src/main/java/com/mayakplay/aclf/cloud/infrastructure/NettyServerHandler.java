@@ -14,11 +14,11 @@ import org.jetbrains.annotations.NotNull;
  * @since 20.07.2019.
  */
 @ChannelHandler.Sharable
-public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
+final class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     private GatewayClientsContainer gatewayContainer;
 
-    public NettyServerHandler(GatewayClientsContainer gatewayContainer) {
+    NettyServerHandler(GatewayClientsContainer gatewayContainer) {
         this.gatewayContainer = gatewayContainer;
     }
 
@@ -65,7 +65,7 @@ public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
         super.channelInactive(ctx);
     }
 
-    public void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull Nugget nugget) {
+    void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull Nugget nugget) {
         final ChannelHandlerContext contextByClientId = gatewayContainer.getContextByClientId(clientInfo.getClientId());
 
         if (contextByClientId != null) {
@@ -75,7 +75,7 @@ public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    public void sendToAll(@NotNull Nugget nugget) {
+    void sendToAll(@NotNull Nugget nugget) {
         for (ChannelHandlerContext context : gatewayContainer.getContainedContexts()) {
             context.writeAndFlush(JsonUtils.toJson(nugget) + "\n");
         }
