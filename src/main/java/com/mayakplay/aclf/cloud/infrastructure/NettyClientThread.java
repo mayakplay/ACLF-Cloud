@@ -34,7 +34,7 @@ final class NettyClientThread extends Thread {
     public void run() {
         final ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
             @Override
-            public void initChannel(SocketChannel socketChannel) throws Exception {
+            public void initChannel(SocketChannel socketChannel) {
                 ChannelPipeline channelPipeline = socketChannel.pipeline();
                 channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
                 channelPipeline.addLast("decoder", new StringDecoder());

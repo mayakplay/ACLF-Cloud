@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class RegisterResponseMessage {
+public final class RegisterResponseMessage {
 
     private final String clientId;
 

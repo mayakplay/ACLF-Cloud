@@ -13,7 +13,7 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString
-class RegisteredClientInfo implements GatewayClientInfo {
+final class RegisteredClientInfo implements GatewayClientInfo {
 
     private final String clientId;
     private final String clientType;

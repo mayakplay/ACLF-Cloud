@@ -16,7 +16,7 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 @ToString
-class NuggetWrapper implements Nugget {
+final class NuggetWrapper implements Nugget {
 
     @NotNull
     private final String message;

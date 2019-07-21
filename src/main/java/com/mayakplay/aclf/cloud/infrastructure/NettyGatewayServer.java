@@ -14,7 +14,7 @@ import java.util.Set;
  * @version 0.0.1
  * @since 20.07.2019.
  */
-public class NettyGatewayServer implements GatewayServer {
+public final class NettyGatewayServer implements GatewayServer {
 
     private final NettyServerThread nettyServerThread;
 

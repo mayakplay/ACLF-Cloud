@@ -13,7 +13,7 @@ import java.util.Map;
  * @version 0.0.1
  * @since 21.07.2019.
  */
-public class NettyGatewayClient implements GatewayClient {
+public final class NettyGatewayClient implements GatewayClient {
 
     private final NettyClientThread nettyClientThread;
     private final List<NuggetReceiveCallback> receiveCallbacks = new ArrayList<>();

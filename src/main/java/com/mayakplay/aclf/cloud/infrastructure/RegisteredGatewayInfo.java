@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-class RegisteredGatewayInfo implements GatewayInfo {
+final class RegisteredGatewayInfo implements GatewayInfo {
 
     private String assignedId;
 

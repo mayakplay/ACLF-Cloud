@@ -2,6 +2,8 @@ package com.mayakplay.aclf.cloud.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -9,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
  * @version 0.0.1
  * @since 21.07.2019.
  */
-public class JsonUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JsonUtils {
 
     private static Gson gson = new Gson();
 
