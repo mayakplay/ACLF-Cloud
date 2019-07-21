@@ -65,12 +65,10 @@ final class GatewayClientsContainer {
         return clientsAssociationsMap.get(clientId);
     }
 
-    @NotNull
     Map<String, GatewayClientInfo> getClients() {
         return ImmutableMap.copyOf(clientsAssociationsMap);
     }
 
-    @NotNull
     Map<String, GatewayClientInfo> getClientsByType(String type) {
         return ImmutableMap.copyOf(clientsAssociationsMap.entrySet().stream()
                 .filter(entry -> entry.getValue().getClientType().equals(type))
