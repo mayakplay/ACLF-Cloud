@@ -4,7 +4,7 @@
 
 <img src="https://pp.userapi.com/c849432/v849432835/1da138/tKVV6IG4r8I.jpg" align="center" height="250">
 
-# Usage example
+## Usage example
 
 ```java
 /**
