@@ -55,6 +55,7 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext context, Object msg) {
+        System.out.println(msg);
         final String messageString = (String) msg;
 
         final NuggetWrapper nugget = JsonUtils.toObject(messageString, NuggetWrapper.class);
