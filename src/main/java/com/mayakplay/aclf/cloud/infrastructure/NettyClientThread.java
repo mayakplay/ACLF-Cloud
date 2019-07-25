@@ -25,8 +25,8 @@ final class NettyClientThread extends Thread {
     private final int port;
     private final NettyClientHandler nettyClientHandler;
 
-    NettyClientThread(String host, int port, String clientType, NuggetReceiveCallback receiveCallback, RegistrationCallback registrationCallback) {
-        this.nettyClientHandler = new NettyClientHandler(receiveCallback, registrationCallback, clientType);
+    NettyClientThread(String host, int port, String clientType, Map<String, String> parameters, NuggetReceiveCallback receiveCallback, RegistrationCallback registrationCallback) {
+        this.nettyClientHandler = new NettyClientHandler(parameters, receiveCallback, registrationCallback, clientType);
         this.host = host;
         this.port = port;
     }

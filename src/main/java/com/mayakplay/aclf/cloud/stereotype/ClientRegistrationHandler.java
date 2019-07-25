@@ -1,5 +1,7 @@
 package com.mayakplay.aclf.cloud.stereotype;
 
+import java.util.Map;
+
 /**
  * @author mayakplay
  * @version 0.0.1
@@ -7,7 +9,7 @@ package com.mayakplay.aclf.cloud.stereotype;
  */
 public interface ClientRegistrationHandler {
 
-    void onRegister(GatewayClientInfo clientInfo);
+    void onRegister(GatewayClientInfo clientInfo, Map<String, String> parameters);
 
     void onUnregister(GatewayClientInfo clientInfo);
 

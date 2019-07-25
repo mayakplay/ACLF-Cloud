@@ -1,6 +1,7 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
 import com.mayakplay.aclf.cloud.stereotype.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,8 @@ public final class NettyGatewayClient implements GatewayClient {
     private final List<NuggetReceiveCallback> receiveCallbacks = new ArrayList<>();
     private final List<RegistrationCallback> registrationCallbacks = new ArrayList<>();
 
-    public NettyGatewayClient(String host, int port, String clientType) {
-        this.nettyClientThread = new NettyClientThread(host, port, clientType, this::initReceiveCallbacks, this::initRegistrationCallbacks);
+    public NettyGatewayClient(String host, int port, String clientType, @NotNull Map<String, String> parameters) {
+        this.nettyClientThread = new NettyClientThread(host, port, clientType, parameters, this::initReceiveCallbacks, this::initRegistrationCallbacks);
         this.nettyClientThread.start();
     }
 
@@ -26,8 +27,8 @@ public final class NettyGatewayClient implements GatewayClient {
         receiveCallbacks.forEach(callback -> callback.nuggetReceived(nugget));
     }
 
-    private void initRegistrationCallbacks(GatewayInfo gatewayInfo) {
-        registrationCallbacks.forEach(callback -> callback.onRegister(gatewayInfo));
+    private void initRegistrationCallbacks(GatewayInfo gatewayInfo, Map<String, String> parameters) {
+        registrationCallbacks.forEach(callback -> callback.onRegister(gatewayInfo, parameters));
     }
 
     @Override

@@ -31,10 +31,10 @@ final class NettyServerThread extends Thread {
     private final NettyServerHandler nettyServerHandler;
     private final GatewayClientsContainer clientsContainer;
 
-    NettyServerThread(int port, ClientNuggetReceiveCallback receiveCallback, ClientRegistrationHandler registrationHandler) {
+    NettyServerThread(int port, ClientNuggetReceiveCallback receiveCallback, ClientRegistrationHandler registrationHandler, Map<String, String> parameters) {
         this.port = port;
 
-        this.clientsContainer = new GatewayClientsContainer(receiveCallback, registrationHandler);
+        this.clientsContainer = new GatewayClientsContainer(parameters, receiveCallback, registrationHandler);
         this.nettyServerHandler = new NettyServerHandler(clientsContainer);
     }
 

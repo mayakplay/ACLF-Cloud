@@ -1,5 +1,6 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
+import com.google.common.collect.ImmutableMap;
 import com.mayakplay.aclf.cloud.nugget.RegisterMessage;
 import com.mayakplay.aclf.cloud.nugget.RegisterResponseMessage;
 import com.mayakplay.aclf.cloud.stereotype.GatewayInfo;
@@ -12,6 +13,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author mayakplay
@@ -20,6 +22,8 @@ import java.util.HashMap;
  */
 @RequiredArgsConstructor
 final class NettyClientHandler extends ChannelInboundHandlerAdapter {
+
+    private final Map<String, String> parameters;
 
     private final NuggetReceiveCallback callback;
     private final RegistrationCallback registrationCallback;
@@ -42,7 +46,7 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext context) {
         this.context = context;
 
-        final NuggetWrapper test = new NuggetWrapper(JsonUtils.toJson(new RegisterMessage(clientType)), new HashMap<>());
+        final NuggetWrapper test = new NuggetWrapper(JsonUtils.toJson(new RegisterMessage(clientType, parameters)), new HashMap<>());
 
         final String json = JsonUtils.toJson(test);
 
@@ -65,7 +69,7 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
                     final String clientId = responseMessage.getClientId();
 
                     gatewayInfo = new RegisteredGatewayInfo(clientId);
-                    registrationCallback.onRegister(gatewayInfo);
+                    registrationCallback.onRegister(gatewayInfo, ImmutableMap.copyOf(parameters));
                 }
             } else {
                 callback.nuggetReceived(nugget);

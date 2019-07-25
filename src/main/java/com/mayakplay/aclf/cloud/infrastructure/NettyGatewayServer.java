@@ -19,9 +19,9 @@ public final class NettyGatewayServer implements GatewayServer {
     private final List<ClientNuggetReceiveCallback> receiveCallbacks = new ArrayList<>();
     private final ContainerHandler containerHandler = new ContainerHandler();
 
-    public NettyGatewayServer(int port) {
+    public NettyGatewayServer(int port, Map<String, String> parameters) {
 
-        nettyServerThread = new NettyServerThread(port, this::initReceiveCallbacks, containerHandler);
+        nettyServerThread = new NettyServerThread(port, this::initReceiveCallbacks, containerHandler, parameters);
         nettyServerThread.start();
     }
 
@@ -75,8 +75,8 @@ public final class NettyGatewayServer implements GatewayServer {
         private final List<ClientRegistrationHandler> registrationHandlers = new ArrayList<>();
 
         @Override
-        public void onRegister(GatewayClientInfo clientInfo) {
-            registrationHandlers.forEach(handler -> handler.onRegister(clientInfo));
+        public void onRegister(GatewayClientInfo clientInfo, Map<String, String> parameters) {
+            registrationHandlers.forEach(handler -> handler.onRegister(clientInfo, parameters));
         }
 
         @Override

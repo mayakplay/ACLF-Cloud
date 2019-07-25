@@ -5,6 +5,8 @@ import com.mayakplay.aclf.cloud.infrastructure.NettyGatewayServer;
 import com.mayakplay.aclf.cloud.stereotype.GatewayServer;
 import com.mayakplay.aclf.cloud.stereotype.Nugget;
 
+import java.util.HashMap;
+
 /**
  * Usage example
  *
@@ -29,12 +31,12 @@ public class ServerClientTest {
      */
     public static void main(String[] args) throws InterruptedException {
         //Creating and starting a server
-        final GatewayServer gatewayServer = new NettyGatewayServer(PORT);
+        final GatewayServer gatewayServer = new NettyGatewayServer(PORT, new HashMap<>());
 
         //Looping clients creation
         for (int i = 0; i < TEST_CLIENTS_COUNT; i++) {
             //Creating and running a client
-            final NettyGatewayClient gatewayClient = new NettyGatewayClient("127.0.0.1", PORT, "test");
+            final NettyGatewayClient gatewayClient = new NettyGatewayClient("127.0.0.1", PORT, "test", new HashMap<>());
 
             //Adding a listener for incoming nuggets
             gatewayClient.addReceiveCallback(ServerClientTest::onMessage);

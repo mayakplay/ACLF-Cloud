@@ -2,6 +2,7 @@ package com.mayakplay.aclf.cloud.infrastructure;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.mayakplay.aclf.cloud.nugget.RegisterMessage;
 import com.mayakplay.aclf.cloud.nugget.RegisterResponseMessage;
 import com.mayakplay.aclf.cloud.stereotype.ClientNuggetReceiveCallback;
@@ -25,7 +26,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 final class GatewayClientsContainer {
 
-    private final Set<String> allowedIps = new HashSet<>();
+    private final Map<String, String> parameters;
+
+    private final Set<String> allowedIps = Sets.newHashSet("127.0.0.1");
     private final ClientNuggetReceiveCallback receiveCallback;
     private final ClientRegistrationHandler registrationHandler;
 
@@ -115,16 +118,18 @@ final class GatewayClientsContainer {
 
             final RegisteredClientInfo newClientInfo = new RegisteredClientInfo(generatedClientId, registerMessage.getClientType());
 
+            final Map<String, String> clientParameters = registerMessage.getParameters();
+
             //region put associations values
             clientInfoMap.put(socketAddress.toString(), newClientInfo);
             contextAssociationMap.put(newClientInfo.getClientId(), ctx);
             clientsAssociationsMap.put(newClientInfo.getClientId(), newClientInfo);
             //endregion
 
-            registrationHandler.onRegister(newClientInfo);
+            registrationHandler.onRegister(newClientInfo, ImmutableMap.copyOf(clientParameters));
             System.out.println("Client registered: " + newClientInfo);
 
-            final RegisterResponseMessage responseMessage = new RegisterResponseMessage(generatedClientId);
+            final RegisterResponseMessage responseMessage = new RegisterResponseMessage(generatedClientId, this.parameters);
 
             return new NuggetWrapper(JsonUtils.toJson(responseMessage), new HashMap<>());
         }
