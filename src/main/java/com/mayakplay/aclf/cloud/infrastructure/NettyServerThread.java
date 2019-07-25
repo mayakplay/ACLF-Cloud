@@ -48,7 +48,7 @@ final class NettyServerThread extends Thread {
             @Override
             public void initChannel(SocketChannel socketChannel) {
                 System.out.println("Connected: " + "[" + socketChannel.remoteAddress() + "]");
-                socketChannel.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
+                socketChannel.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(81920, Delimiters.lineDelimiter()));
                 socketChannel.pipeline().addLast("decoder", new StringDecoder());
                 socketChannel.pipeline().addLast("encoder", new StringEncoder());
                 socketChannel.pipeline().addLast(nettyServerHandler);

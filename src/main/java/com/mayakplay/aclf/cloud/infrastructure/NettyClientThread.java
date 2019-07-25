@@ -1,6 +1,7 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
 import com.mayakplay.aclf.cloud.stereotype.NuggetReceiveCallback;
+import com.mayakplay.aclf.cloud.stereotype.RegistrationCallback;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -24,8 +25,8 @@ final class NettyClientThread extends Thread {
     private final int port;
     private final NettyClientHandler nettyClientHandler;
 
-    NettyClientThread(String host, int port, String clientType, NuggetReceiveCallback receiveCallback) {
-        this.nettyClientHandler = new NettyClientHandler(receiveCallback, clientType);
+    NettyClientThread(String host, int port, String clientType, NuggetReceiveCallback receiveCallback, RegistrationCallback registrationCallback) {
+        this.nettyClientHandler = new NettyClientHandler(receiveCallback, registrationCallback, clientType);
         this.host = host;
         this.port = port;
     }
@@ -36,7 +37,7 @@ final class NettyClientThread extends Thread {
             @Override
             public void initChannel(SocketChannel socketChannel) {
                 ChannelPipeline channelPipeline = socketChannel.pipeline();
-                channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
+                channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(81920, Delimiters.lineDelimiter()));
                 channelPipeline.addLast("decoder", new StringDecoder());
                 channelPipeline.addLast("encoder", new StringEncoder());
                 channelPipeline.addLast(nettyClientHandler);
@@ -74,3 +75,4 @@ final class NettyClientThread extends Thread {
     }
 
 }
+

@@ -5,6 +5,7 @@ import com.mayakplay.aclf.cloud.nugget.RegisterResponseMessage;
 import com.mayakplay.aclf.cloud.stereotype.GatewayInfo;
 import com.mayakplay.aclf.cloud.stereotype.Nugget;
 import com.mayakplay.aclf.cloud.stereotype.NuggetReceiveCallback;
+import com.mayakplay.aclf.cloud.stereotype.RegistrationCallback;
 import com.mayakplay.aclf.cloud.util.JsonUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private final NuggetReceiveCallback callback;
+    private final RegistrationCallback registrationCallback;
     private final String clientType;
 
     private ChannelHandlerContext context;
@@ -63,6 +65,7 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
                     final String clientId = responseMessage.getClientId();
 
                     gatewayInfo = new RegisteredGatewayInfo(clientId);
+                    registrationCallback.onRegister(gatewayInfo);
                 }
             } else {
                 callback.nuggetReceived(nugget);

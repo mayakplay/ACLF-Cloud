@@ -13,6 +13,8 @@ public interface GatewayClient {
 
     GatewayClient addReceiveCallback(NuggetReceiveCallback callback);
 
+    GatewayClient addRegistrationCallback(RegistrationCallback callback);
+
     boolean isRegistered();
 
 }
