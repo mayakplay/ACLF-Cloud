@@ -15,7 +15,8 @@ import lombok.ToString;
 @ToString
 final class RegisteredClientInfo implements GatewayClientInfo {
 
-    private final String clientId;
-    private final String clientType;
+    private final String id;
+    private final String type;
+    private final String ip;
 
 }

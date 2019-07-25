@@ -79,7 +79,7 @@ final class GatewayClientsContainer {
 
     Map<String, GatewayClientInfo> getClientsByType(String type) {
         return ImmutableMap.copyOf(clientsAssociationsMap.entrySet().stream()
-                .filter(entry -> entry.getValue().getClientType().equals(type))
+                .filter(entry -> entry.getValue().getType().equals(type))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b)));
     }
     //endregion
@@ -93,8 +93,8 @@ final class GatewayClientsContainer {
         final GatewayClientInfo remove = clientInfoMap.remove(socketAddress.toString());
 
         if (remove != null) {
-            contextAssociationMap.remove(remove.getClientId());
-            clientsAssociationsMap.remove(remove.getClientId());
+            contextAssociationMap.remove(remove.getId());
+            clientsAssociationsMap.remove(remove.getId());
             registrationHandler.onUnregister(remove);
         }
     }
@@ -116,14 +116,17 @@ final class GatewayClientsContainer {
         if (registerMessage != null) {
             final String generatedClientId = generateNewId(registerMessage.getClientType());
 
-            final RegisteredClientInfo newClientInfo = new RegisteredClientInfo(generatedClientId, registerMessage.getClientType());
+            final RegisteredClientInfo newClientInfo = new RegisteredClientInfo(
+                    generatedClientId,
+                    registerMessage.getClientType(),
+                    parseIp(socketAddress));
 
             final Map<String, String> clientParameters = registerMessage.getParameters();
 
             //region put associations values
             clientInfoMap.put(socketAddress.toString(), newClientInfo);
-            contextAssociationMap.put(newClientInfo.getClientId(), ctx);
-            clientsAssociationsMap.put(newClientInfo.getClientId(), newClientInfo);
+            contextAssociationMap.put(newClientInfo.getId(), ctx);
+            clientsAssociationsMap.put(newClientInfo.getId(), newClientInfo);
             //endregion
 
             registrationHandler.onRegister(newClientInfo, ImmutableMap.copyOf(clientParameters));

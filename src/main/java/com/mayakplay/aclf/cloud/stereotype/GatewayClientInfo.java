@@ -7,8 +7,10 @@ package com.mayakplay.aclf.cloud.stereotype;
  */
 public interface GatewayClientInfo {
 
-    String getClientId();
+    String getId();
 
-    String getClientType();
+    String getType();
+
+    String getIp();
 
 }

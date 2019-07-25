@@ -66,7 +66,7 @@ final class NettyServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull Nugget nugget) {
-        final ChannelHandlerContext contextByClientId = gatewayContainer.getContextByClientId(clientInfo.getClientId());
+        final ChannelHandlerContext contextByClientId = gatewayContainer.getContextByClientId(clientInfo.getId());
 
         if (contextByClientId != null) {
             final String jsonNugget = JsonUtils.toJson(nugget);
