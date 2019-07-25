@@ -14,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.SocketAddress;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 final class GatewayClientsContainer {
 
-    private final Set<String> allowedIps;
+    private final Set<String> allowedIps = new HashSet<>();
     private final ClientNuggetReceiveCallback receiveCallback;
     private final ClientRegistrationHandler registrationHandler;
 
@@ -54,6 +51,10 @@ final class GatewayClientsContainer {
      * Id generation util field
      */
     private int serverCounter = 0;
+
+    void addAllowedIp(String ip) {
+        allowedIps.add(ip);
+    }
 
     //region Getters
     ChannelHandlerContext getContextByClientId(String clientId) {

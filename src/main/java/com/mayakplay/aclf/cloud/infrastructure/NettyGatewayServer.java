@@ -1,11 +1,12 @@
 package com.mayakplay.aclf.cloud.infrastructure;
 
-import com.google.common.collect.Sets;
 import com.mayakplay.aclf.cloud.stereotype.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author mayakplay
@@ -18,10 +19,9 @@ public final class NettyGatewayServer implements GatewayServer {
     private final List<ClientNuggetReceiveCallback> receiveCallbacks = new ArrayList<>();
     private final ContainerHandler containerHandler = new ContainerHandler();
 
-    public NettyGatewayServer(int port, String... allowedIps) {
-        final HashSet<String> strings = Sets.newHashSet(allowedIps);
+    public NettyGatewayServer(int port) {
 
-        nettyServerThread = new NettyServerThread(port, strings, this::initReceiveCallbacks, containerHandler);
+        nettyServerThread = new NettyServerThread(port, this::initReceiveCallbacks, containerHandler);
         nettyServerThread.start();
     }
 
@@ -60,8 +60,11 @@ public final class NettyGatewayServer implements GatewayServer {
     public void sendToAll(@NotNull String message, @NotNull Map<String, String> params) {
         nettyServerThread.sendToAll(message, params);
     }
-
     //endregion
+
+    public void addAllowedIp(String ip) {
+        nettyServerThread.addAllowedIp(ip);
+    }
 
     private void initReceiveCallbacks(GatewayClientInfo gatewayClientInfo, Nugget nugget) {
         receiveCallbacks.forEach(callback -> callback.nuggetReceived(gatewayClientInfo, nugget));

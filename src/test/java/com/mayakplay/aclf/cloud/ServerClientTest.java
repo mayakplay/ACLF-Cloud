@@ -1,5 +1,6 @@
 package com.mayakplay.aclf.cloud;
 
+import com.mayakplay.aclf.cloud.infrastructure.NettyGatewayClient;
 import com.mayakplay.aclf.cloud.infrastructure.NettyGatewayServer;
 import com.mayakplay.aclf.cloud.stereotype.GatewayServer;
 import com.mayakplay.aclf.cloud.stereotype.Nugget;
@@ -30,20 +31,20 @@ public class ServerClientTest {
         //Creating and starting a server
         final GatewayServer gatewayServer = new NettyGatewayServer(PORT);
 
-//        //Looping clients creation
-//        for (int i = 0; i < TEST_CLIENTS_COUNT; i++) {
-//            //Creating and running a client
-//            final NettyGatewayClient gatewayClient = new NettyGatewayClient("127.0.0.1", PORT, "test");
-//
-//            //Adding a listener for incoming nuggets
-//            gatewayClient.addReceiveCallback(ServerClientTest::onMessage);
-//        }
-//
+        //Looping clients creation
+        for (int i = 0; i < TEST_CLIENTS_COUNT; i++) {
+            //Creating and running a client
+            final NettyGatewayClient gatewayClient = new NettyGatewayClient("127.0.0.1", PORT, "test");
+
+            //Adding a listener for incoming nuggets
+            gatewayClient.addReceiveCallback(ServerClientTest::onMessage);
+        }
+
 //        //Delay emulation
-//        Thread.sleep(3000);
-//
+        Thread.sleep(3000);
+
 //        //Send nugget to all clients
-//        gatewayServer.sendToAll("Hello world!");
+        gatewayServer.sendToAll("Hello world!");
     }
 
     /**

@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author mayakplay
@@ -32,13 +31,10 @@ final class NettyServerThread extends Thread {
     private final NettyServerHandler nettyServerHandler;
     private final GatewayClientsContainer clientsContainer;
 
-    NettyServerThread(int port, Set<String> allowedIps, ClientNuggetReceiveCallback receiveCallback, ClientRegistrationHandler registrationHandler) {
-        allowedIps.add("127.0.0.1");
-
+    NettyServerThread(int port, ClientNuggetReceiveCallback receiveCallback, ClientRegistrationHandler registrationHandler) {
         this.port = port;
 
-        this.clientsContainer = new GatewayClientsContainer(allowedIps, receiveCallback, registrationHandler);
-
+        this.clientsContainer = new GatewayClientsContainer(receiveCallback, registrationHandler);
         this.nettyServerHandler = new NettyServerHandler(clientsContainer);
     }
 
@@ -76,6 +72,10 @@ final class NettyServerThread extends Thread {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    public void addAllowedIp(String ip) {
+        clientsContainer.addAllowedIp(ip);
     }
 
     void sendToClient(@NotNull GatewayClientInfo clientInfo, @NotNull String message, @NotNull Map<String, String> params) {
