@@ -64,49 +64,6 @@ final class NettyClientThread extends Thread {
     @Override
     public void run() {
         createBootstrap(new Bootstrap(), loopGroup);
-//        final ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
-//            @Override
-//            public void initChannel(SocketChannel socketChannel) {
-//                ChannelPipeline channelPipeline = socketChannel.pipeline();
-//                channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(81920, Delimiters.lineDelimiter()));
-//                channelPipeline.addLast("decoder", new StringDecoder());
-//                channelPipeline.addLast("encoder", new StringEncoder());
-//                channelPipeline.addLast(nettyClientHandler);
-//            }
-//        };
-//
-//        // Configure the client.
-//        EventLoopGroup group = new NioEventLoopGroup();
-//        try {
-//            Bootstrap bootstrap = new Bootstrap();
-//            bootstrap.group(group)
-//                    .channel(NioSocketChannel.class)
-//                    .option(ChannelOption.TCP_NODELAY, true)
-//                    .option(ChannelOption.SO_KEEPALIVE, true)
-//                    .handler(channelInitializer);
-//
-//            //region OLD
-////            // Start the client.
-////            ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
-////
-////            // Wait until the connection is closed.
-////            channelFuture.channel().closeFuture().sync();
-//            //endregion
-//
-//            // Start the client.
-//            ChannelFuture channelFuture = bootstrap.connect(host, port)
-//                    .channel().closeFuture();
-////                    .sync();
-////
-//            // Wait until the connection is closed.
-//            channelFuture.channel().closeFuture().sync();
-//
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } finally {
-//            // Shut down the event loop to terminate all threads.
-//            group.shutdownGracefully();
-//        }
     }
 
     void sendToServer(String message, Map<String, String> parameters) {

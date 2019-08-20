@@ -81,11 +81,9 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
-//        cause.printStackTrace();
-//        context.close();
-    }
+//    @Override
+//    public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
+//    }
 
     @Override
     public void channelInactive(ChannelHandlerContext context) throws Exception {

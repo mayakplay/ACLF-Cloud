@@ -30,6 +30,6 @@ public class ReconnectInboundHandler extends SimpleChannelInboundHandler {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-
+        //IGNORED
     }
 }
