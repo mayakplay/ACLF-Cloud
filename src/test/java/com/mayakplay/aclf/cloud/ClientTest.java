@@ -12,10 +12,14 @@ public class ClientTest {
 
     private static final int PORT = 8080;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         final NettyGatewayClient gatewayClient = new NettyGatewayClient("127.0.0.1", PORT, "test", new HashMap<>());
 
+        while (true) {
+            Thread.sleep(1000);
+            System.out.println(gatewayClient.isRegistered());
+        }
     }
 
 }

@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
  * @author mayakplay
  * @since 20.08.2019.
  */
-public class MyInboundHandler extends SimpleChannelInboundHandler {
+public class ReconnectInboundHandler extends SimpleChannelInboundHandler {
 
     private final NettyClientThread clientThread;
 
-    public MyInboundHandler(NettyClientThread clientThread) {
+    public ReconnectInboundHandler(NettyClientThread clientThread) {
         this.clientThread = clientThread;
     }
 

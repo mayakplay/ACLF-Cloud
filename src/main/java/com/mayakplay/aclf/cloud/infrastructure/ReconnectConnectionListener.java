@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
  * @author mayakplay
  * @since 20.08.2019.
  */
-class ConnectionListener implements ChannelFutureListener {
+class ReconnectConnectionListener implements ChannelFutureListener {
 
     private final NettyClientThread clientThread;
 
-    ConnectionListener(NettyClientThread clientThread) {
+    ReconnectConnectionListener(NettyClientThread clientThread) {
         this.clientThread = clientThread;
     }
 

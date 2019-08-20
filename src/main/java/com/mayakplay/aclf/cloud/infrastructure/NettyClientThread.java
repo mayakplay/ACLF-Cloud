@@ -27,18 +27,13 @@ final class NettyClientThread extends Thread {
     private final int port;
     private final NettyClientHandler nettyClientHandler;
 
-    private final int RECONNECTS_TIL_MESSAGE_COUNT = 5;
-
-    private boolean connected;
-
-
     NettyClientThread(String host, int port, String clientType, Map<String, String> parameters, NuggetReceiveCallback receiveCallback, RegistrationCallback registrationCallback) {
         this.nettyClientHandler = new NettyClientHandler(parameters, receiveCallback, registrationCallback, clientType);
         this.host = host;
         this.port = port;
     }
 
-    public Bootstrap createBootstrap(Bootstrap bootstrap, EventLoopGroup eventLoopGroup) {
+    Bootstrap createBootstrap(Bootstrap bootstrap, EventLoopGroup eventLoopGroup) {
         if (bootstrap != null) {
             final NettyClientThread clientThread = this;
 
@@ -50,7 +45,7 @@ final class NettyClientThread extends Thread {
                     channelPipeline.addLast("decoder", new StringDecoder());
                     channelPipeline.addLast("encoder", new StringEncoder());
                     channelPipeline.addLast(nettyClientHandler);
-                    channelPipeline.addLast(new MyInboundHandler(clientThread));
+                    channelPipeline.addLast(new ReconnectInboundHandler(clientThread));
                 }
             };
 
@@ -60,7 +55,7 @@ final class NettyClientThread extends Thread {
             bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
             bootstrap.handler(channelInitializer);
             bootstrap.remoteAddress(host, port);
-            bootstrap.connect().addListener(new ConnectionListener(this));
+            bootstrap.connect().addListener(new ReconnectConnectionListener(this));
         }
 
         return bootstrap;
@@ -115,7 +110,8 @@ final class NettyClientThread extends Thread {
     }
 
     void sendToServer(String message, Map<String, String> parameters) {
-        nettyClientHandler.sendNugget(new NuggetWrapper(message, parameters));
+        if (isRegistered())
+            nettyClientHandler.sendNugget(new NuggetWrapper(message, parameters));
     }
 
     boolean isRegistered() {

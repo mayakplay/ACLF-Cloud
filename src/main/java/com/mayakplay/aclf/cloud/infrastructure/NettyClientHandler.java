@@ -90,6 +90,7 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext context) throws Exception {
         super.channelInactive(context);
+        gatewayInfo = null;
     }
 
 }
