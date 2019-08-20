@@ -24,7 +24,8 @@ final class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println(msg);
+        System.out.println("DBG:" + msg);
+
         final NuggetWrapper nuggetWrapper = JsonUtils.toObject((String) msg, NuggetWrapper.class);
 
         if (nuggetWrapper != null) {

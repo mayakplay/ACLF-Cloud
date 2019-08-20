@@ -21,9 +21,16 @@ import java.util.Map;
  */
 final class NettyClientThread extends Thread {
 
+    private final EventLoopGroup loopGroup = new NioEventLoopGroup();
+
     private final String host;
     private final int port;
     private final NettyClientHandler nettyClientHandler;
+
+    private final int RECONNECTS_TIL_MESSAGE_COUNT = 5;
+
+    private boolean connected;
+
 
     NettyClientThread(String host, int port, String clientType, Map<String, String> parameters, NuggetReceiveCallback receiveCallback, RegistrationCallback registrationCallback) {
         this.nettyClientHandler = new NettyClientHandler(parameters, receiveCallback, registrationCallback, clientType);
@@ -31,39 +38,80 @@ final class NettyClientThread extends Thread {
         this.port = port;
     }
 
+    public Bootstrap createBootstrap(Bootstrap bootstrap, EventLoopGroup eventLoopGroup) {
+        if (bootstrap != null) {
+            final NettyClientThread clientThread = this;
+
+            final ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel socketChannel) {
+                    ChannelPipeline channelPipeline = socketChannel.pipeline();
+                    channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(81920, Delimiters.lineDelimiter()));
+                    channelPipeline.addLast("decoder", new StringDecoder());
+                    channelPipeline.addLast("encoder", new StringEncoder());
+                    channelPipeline.addLast(nettyClientHandler);
+                    channelPipeline.addLast(new MyInboundHandler(clientThread));
+                }
+            };
+
+
+            bootstrap.group(eventLoopGroup);
+            bootstrap.channel(NioSocketChannel.class);
+            bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+            bootstrap.handler(channelInitializer);
+            bootstrap.remoteAddress(host, port);
+            bootstrap.connect().addListener(new ConnectionListener(this));
+        }
+
+        return bootstrap;
+    }
+
     @Override
     public void run() {
-        final ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
-            @Override
-            public void initChannel(SocketChannel socketChannel) {
-                ChannelPipeline channelPipeline = socketChannel.pipeline();
-                channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(81920, Delimiters.lineDelimiter()));
-                channelPipeline.addLast("decoder", new StringDecoder());
-                channelPipeline.addLast("encoder", new StringEncoder());
-                channelPipeline.addLast(nettyClientHandler);
-            }
-        };
-
-        // Configure the client.
-        EventLoopGroup group = new NioEventLoopGroup();
-        try {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(channelInitializer);
-
-            // Start the client.
-            ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
-
-            // Wait until the connection is closed.
-            channelFuture.channel().closeFuture().sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            // Shut down the event loop to terminate all threads.
-            group.shutdownGracefully();
-        }
+        createBootstrap(new Bootstrap(), loopGroup);
+//        final ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
+//            @Override
+//            public void initChannel(SocketChannel socketChannel) {
+//                ChannelPipeline channelPipeline = socketChannel.pipeline();
+//                channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(81920, Delimiters.lineDelimiter()));
+//                channelPipeline.addLast("decoder", new StringDecoder());
+//                channelPipeline.addLast("encoder", new StringEncoder());
+//                channelPipeline.addLast(nettyClientHandler);
+//            }
+//        };
+//
+//        // Configure the client.
+//        EventLoopGroup group = new NioEventLoopGroup();
+//        try {
+//            Bootstrap bootstrap = new Bootstrap();
+//            bootstrap.group(group)
+//                    .channel(NioSocketChannel.class)
+//                    .option(ChannelOption.TCP_NODELAY, true)
+//                    .option(ChannelOption.SO_KEEPALIVE, true)
+//                    .handler(channelInitializer);
+//
+//            //region OLD
+////            // Start the client.
+////            ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
+////
+////            // Wait until the connection is closed.
+////            channelFuture.channel().closeFuture().sync();
+//            //endregion
+//
+//            // Start the client.
+//            ChannelFuture channelFuture = bootstrap.connect(host, port)
+//                    .channel().closeFuture();
+////                    .sync();
+////
+//            // Wait until the connection is closed.
+//            channelFuture.channel().closeFuture().sync();
+//
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } finally {
+//            // Shut down the event loop to terminate all threads.
+//            group.shutdownGracefully();
+//        }
     }
 
     void sendToServer(String message, Map<String, String> parameters) {

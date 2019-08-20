@@ -15,13 +15,24 @@ import java.util.Map;
  */
 public final class NettyGatewayServer implements GatewayServer {
 
+    private final List<ClientRegistrationHandler> registrationHandlers = new ArrayList<>();
     private final NettyServerThread nettyServerThread;
     private final List<ClientNuggetReceiveCallback> receiveCallbacks = new ArrayList<>();
-    private final ContainerHandler containerHandler = new ContainerHandler();
 
     public NettyGatewayServer(int port, Map<String, String> parameters) {
+        final ClientRegistrationHandler clientRegistrationHandler = new ClientRegistrationHandler() {
+            @Override
+            public void onRegister(GatewayClientInfo clientInfo, Map<String, String> parameters) {
+                registrationHandlers.forEach(handler -> handler.onRegister(clientInfo, parameters));
+            }
 
-        nettyServerThread = new NettyServerThread(port, this::initReceiveCallbacks, containerHandler, parameters);
+            @Override
+            public void onUnregister(GatewayClientInfo clientInfo) {
+                registrationHandlers.forEach(handler -> handler.onUnregister(clientInfo));
+            }
+        };
+
+        nettyServerThread = new NettyServerThread(port, this::initReceiveCallbacks, clientRegistrationHandler, parameters);
         nettyServerThread.start();
     }
 
@@ -33,7 +44,7 @@ public final class NettyGatewayServer implements GatewayServer {
 
     @Override
     public void addRegistrationHandler(ClientRegistrationHandler handler) {
-        containerHandler.registrationHandlers.add(handler);
+        registrationHandlers.add(handler);
     }
 
     @Override
@@ -69,20 +80,4 @@ public final class NettyGatewayServer implements GatewayServer {
     private void initReceiveCallbacks(GatewayClientInfo gatewayClientInfo, Nugget nugget) {
         receiveCallbacks.forEach(callback -> callback.nuggetReceived(gatewayClientInfo, nugget));
     }
-
-    //region Inner handler
-    private class ContainerHandler implements ClientRegistrationHandler {
-        private final List<ClientRegistrationHandler> registrationHandlers = new ArrayList<>();
-
-        @Override
-        public void onRegister(GatewayClientInfo clientInfo, Map<String, String> parameters) {
-            registrationHandlers.forEach(handler -> handler.onRegister(clientInfo, parameters));
-        }
-
-        @Override
-        public void onUnregister(GatewayClientInfo clientInfo) {
-            registrationHandlers.forEach(handler -> handler.onUnregister(clientInfo));
-        }
-    }
-    //endregion
 }

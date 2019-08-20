@@ -8,6 +8,7 @@ import com.mayakplay.aclf.cloud.stereotype.Nugget;
 import com.mayakplay.aclf.cloud.stereotype.NuggetReceiveCallback;
 import com.mayakplay.aclf.cloud.stereotype.RegistrationCallback;
 import com.mayakplay.aclf.cloud.util.JsonUtils;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @version 0.0.1
  * @since 20.07.2019.
  */
+@ChannelHandler.Sharable
 @RequiredArgsConstructor
 final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
@@ -55,7 +57,7 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext context, Object msg) {
-        System.out.println(msg);
+        System.out.println("DBG:" + msg);
         final String messageString = (String) msg;
 
         final NuggetWrapper nugget = JsonUtils.toObject(messageString, NuggetWrapper.class);
@@ -81,8 +83,8 @@ final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
-        cause.printStackTrace();
-        context.close();
+//        cause.printStackTrace();
+//        context.close();
     }
 
     @Override

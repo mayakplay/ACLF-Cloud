@@ -8,6 +8,6 @@ package com.mayakplay.aclf.cloud.stereotype;
 @FunctionalInterface
 public interface ClientNuggetReceiveCallback {
 
-    void nuggetReceived(GatewayClientInfo serverInfo, Nugget nugget);
+    void nuggetReceived(GatewayClientInfo clientInfo, Nugget nugget);
 
 }

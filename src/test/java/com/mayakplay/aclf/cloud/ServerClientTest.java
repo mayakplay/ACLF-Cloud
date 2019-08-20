@@ -30,13 +30,16 @@ public class ServerClientTest {
      * Starts client and server
      */
     public static void main(String[] args) throws InterruptedException {
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("test", "test");
+
         //Creating and starting a server
-        final GatewayServer gatewayServer = new NettyGatewayServer(PORT, new HashMap<>());
+        final GatewayServer gatewayServer = new NettyGatewayServer(PORT, params);
 
         //Looping clients creation
         for (int i = 0; i < TEST_CLIENTS_COUNT; i++) {
             //Creating and running a client
-            final NettyGatewayClient gatewayClient = new NettyGatewayClient("127.0.0.1", PORT, "test", new HashMap<>());
+            final NettyGatewayClient gatewayClient = new NettyGatewayClient("127.0.0.1", PORT, "test", params);
 
             //Adding a listener for incoming nuggets
             gatewayClient.addReceiveCallback(ServerClientTest::onMessage);
