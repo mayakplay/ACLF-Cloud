@@ -30,7 +30,7 @@ public class ServerClientTest {
      * Starts client and server
      */
     public static void main(String[] args) throws InterruptedException {
-        HashMap<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<>();
         params.put("test", "test");
 
         //Creating and starting a server
